@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+<!--        <base-config cleartextTrafficPermitted="true" />-->
+    <domain-config>
+        <domain includeSubdomains="true">auth.kreditone.in</domain>
+        <domain includeSubdomains="true">oss-ap-south-1.aliyuncs.com</domain>
+        <domain includeSubdomains="true">kreditone-prod.oss-ap-south-1.aliyuncs.com</domain>
+
+<!--        <trust-anchors>-->
+<!--            <certificates src="@raw/kreditone" />-->
+<!--        </trust-anchors>-->
+    </domain-config>
+
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">13.233.95.216</domain>
+        <domain includeSubdomains="true">13.234.94.11</domain>
+
+        <domain includeSubdomains="true">120.78.145.12</domain>
+        <domain includeSubdomains="true">147.139.4.145</domain>
+<!--        <domain includeSubdomains="true">api.razorpay.com</domain>-->
+    </domain-config>
+</network-security-config>

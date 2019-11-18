@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content=",深湾创投">
+    <meta name="description"
+          content="深湾创新投资管理有限公司通过创新投资，项目孵化和科研合作等多种手段，聚焦脑科学领域，运用人工智能和大数据等，提供激发人类潜能、增强人类心理健康的智能产品和解决方案。">
+
+    <title>深圳市深湾创新投资管理有限公司</title>
+</head>
+<body>
+<h3>Js Method</h3>
+<h3 id="textshow">调用结果</h3>
+<button onclick="jsToJava('我来自js')">jsToJava</button>
+</body>
+<script type="text/javascript">
+    var s = "我来自js方法"
+    function javatojscallback(param){
+        document.getElementById("textshow").innerHTML = (param);
+    }
+
+    function javatojswith(param){
+         document.getElementById("textshow").innerHTML = (param);
+         return s;
+    }
+
+    function jsToJava(param){
+         window.android.JsToJavaInterface(param)
+    }
+
+</script>
+</html>
