@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -196,6 +197,13 @@ public class MainActivity extends AppCompatActivity {
             mImage.setImageBitmap(BitmapFactory.decodeFile(mCurrentPhotoPath));
             saveFile(decodeSampledBitmapFromFile(mCurrentPhotoPath, 480, 800));
         }
+
+//
+//        String imageBase64 = response.getString("image");
+////                        String base64 = "data:image/png;" + imageBase64;
+//        byte[] decodedString = Base64.decode(imageBase64, Base64.NO_PADDING);
+//        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//        mImage.setImageBitmap(decodedByte);
     }
 
     private void saveFile(Bitmap bitmap) {
