@@ -3,7 +3,10 @@ package com.deepbay.webviewdemo;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -13,8 +16,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -26,8 +31,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.csii.powerenter.PEEditText;
+import com.csii.powerenter.PEEditTextAttrSet;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -44,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private Button mTake;
     private static final int REQUEST_CAPTURE_BACK = 0x01;
     private String mCurrentPhotoPath;
+    private PEEditText mPwd1;
+    private static final String NAME_1 = "name1";
+    private MyReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,14 +68,16 @@ public class MainActivity extends AppCompatActivity {
         initWebView();
         mWebview.addJavascriptInterface(new JavaMethod(this), "android");
         mWebview.loadUrl("file:///android_asset/index.html");
+//        mWebview.loadUrl("file:///" + Environment.getExternalStorageDirectory() + File.separator + "index.html");
 
         mButtonLoad.setOnClickListener(v -> {
             mWebview.loadUrl("javascript:javatojscallback('我来自Java')");
         });
 
         mButtonEvaluate.setOnClickListener(v -> {
-            mWebview.evaluateJavascript("javascript:javatojswith('我来自Java')", value -> {
-                mText.setText(value);
+            String param = "我来自Java";
+            mWebview.evaluateJavascript("javascript:javatojswith('" + param + "')", value -> {
+                mText.setText(mPwd1.getClearText());
             });
         });
         mImage = findViewById(R.id.image);
@@ -81,6 +93,14 @@ public class MainActivity extends AppCompatActivity {
                 takePhotoNoCompress(REQUEST_CAPTURE_BACK);
             }
         });
+        mPwd1 = findViewById(R.id.pwd1);
+        mPwd1.initialize(getAttrs(NAME_1));
+        receiver = new MyReceiver();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.csii.powerenter.action.Send_msg");
+        this.registerReceiver(receiver, filter);
+
     }
 
     @Override
@@ -111,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
         //允许缓存，设置缓存位置
         webSettings.setAppCacheEnabled(true);
         webSettings.setAppCachePath(this.getDir("appcache", 0).getPath());
+
+//        webSettings.setAllowFileAccessFromFileURLs(true); //Maybe you don't need this rule
+        webSettings.setAllowUniversalAccessFromFileURLs(true);
     }
 
     public void setShowText(String param) {
@@ -157,12 +180,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static Bitmap decodeSampledBitmapFromFile(String file,
-                                                         int reqWidth, int reqHeight) {
+                                                     int reqWidth, int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(file,options);
+        BitmapFactory.decodeFile(file, options);
 
         // Calculate inSampleSize
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
@@ -223,6 +246,58 @@ public class MainActivity extends AppCompatActivity {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void openPEKbd() {
+        // Check if no view has focus:
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+        mPwd1.openPEKbd();
+    }
+
+    private PEEditTextAttrSet getAttrs(String name) {
+        PEEditTextAttrSet attrs = new PEEditTextAttrSet(); //这里设置attrs内容，比如attrs.textColor = Color.WHITE;
+        attrs.name = name;
+        attrs.immersiveStyle = true;
+        attrs.softkbdType = PEEditTextAttrSet.SOFT_KBD_QWER_NUMBER;
+//        attrs.touchTransprtClosed = false;
+//        attrs.clearWhenOpenKbd = false;
+        return attrs;
+    }
+
+    private class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            String name = bundle.getString("PEKbdName");
+            String type = bundle.getString("PEKbdInfo");
+            if (type != null) {
+                switch (type) {
+                    case "kbdchanged":
+                        int length = 0;
+                        String jsStr = "";
+                        if (NAME_1.equals(name)) {
+                            length = mPwd1.getLength();
+                            Log.d("kbdchanged", "onReceive: " + length);
+                            Log.d("kbdchanged", "onReceive: " + mPwd1.getValue(String.valueOf(System.currentTimeMillis())));
+                            jsStr = "getTradePassword";
+                            mWebview.evaluateJavascript("javascript:" + jsStr + "(" + length + ")",
+                                    new ValueCallback<String>() {
+                                        @Override
+                                        public void onReceiveValue(String s) {
+
+                                        }
+                                    });
+                        }
+
+                        break;
+                    default:
+                }
+            }
         }
     }
 }

@@ -21,4 +21,13 @@ public class JavaMethod {
             mainActivity.setShowText(param);
         });
     }
+
+    @JavascriptInterface
+    public boolean showKeyboard() {
+        uiHandler.post(() -> {
+            Log.d("JavaMethod", "JsToJavaInterface: " + Thread.currentThread().getName());
+            mainActivity.openPEKbd();
+        });
+        return true;
+    }
 }

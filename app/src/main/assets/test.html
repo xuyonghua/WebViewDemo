@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    input{
+        width: 100vw;
+        font-size:20px;
+        margin:30px;
+    }
+</style>
+<body>
+<input type="file" accept="image/*" capture="camera" placeholder="拍照" id="file1">
+<input type="file" accept="image/*" placeholder="相册" id="file2">
+
+
+</body>
+<script>
+    var file1 = document.querySelector('#file1');
+    var file2 = document.querySelector('#file2');
+
+    file1.onchange = function (e) {
+        console.log(e)
+        if(e){
+            var file = e.target.files[0];
+            console.log(file.name)
+        }
+    };
+    file2.onchange = function (e) {
+        console.log(e)
+        if(e){
+            var file = e.target.files[0];
+            console.log(file.name)
+        }
+    };
+    document.getElementById('file2').onclick = function(e) {
+       e.target.value = ''
+    }
+
+</script>
+</html>

@@ -14,22 +14,62 @@
 <body>
 <h3>Js Method</h3>
 <h3 id="textshow">调用结果</h3>
+<h3 id="test-response-text">调用结果</h3>
 <button onclick="jsToJava('我来自js')">jsToJava</button>
+<input placeholder="please input password..." type="password" id="password" onclick="showKeyboard()"
+       style="height:60px" readonly="readonly">
+
+<!--图片二-->
+<input class="upload-input"  capture="camera" accept="image/*" multiple required type="file" onchange="chooseImg">
+
 </body>
 <script type="text/javascript">
     var s = "我来自js方法"
+    var g = ''
     function javatojscallback(param){
         document.getElementById("textshow").innerHTML = (param);
+        g = param
     }
 
     function javatojswith(param){
          document.getElementById("textshow").innerHTML = (param);
-         return s;
+         return param;
     }
 
     function jsToJava(param){
+         console.log(g)
          window.android.JsToJavaInterface(param)
+
     }
+
+    function getTradePassword(len){
+         document.getElementById("textshow").innerHTML = (len);
+         return len;
+    }
+
+
+    function showKeyboard(){
+    document.getElementById('password').setAttribute('readonly','readonly')
+<!--        document.getElementById('password').blur()-->
+<!--        setTimeout(()=>{-->
+<!--            document.getElementById('password').focus()-->
+<!--        })-->
+         var ok = window.android.showKeyboard()
+         console.log(ok)
+         if(ok){
+            document.getElementById('password').removeAttribute('readonly')
+            document.getElementById('password').focus()
+         }
+    }
+
+<!--document.getElementById('password').addEventListener('focus', function () {-->
+<!--        document.getElementById('password').blur()-->
+<!--        setTimeout(() => {-->
+<!--            document.getElementById('password').focus()-->
+<!--        }, 10)-->
+<!--    }, true)-->
+
+
 
 </script>
 </html>
